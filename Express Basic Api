@@ -1,0 +1,99 @@
+const express= require("express");
+const app=express();
+
+   const users=[{
+           name:"jhon",
+           kedneys:[{
+              healthy:true
+           },{
+             healthy:false
+           }] 
+   }
+];  
+ 
+ function isPresent(){
+        let harshit=true;
+        for(let i=0;i<users[0].kedneys.length;i++){
+           if(!users[0].kedneys[i].healthy) {
+               harshit=false; 
+               break;
+           } 
+        } 
+        return harshit;
+ }
+ //const users=[user1,user2,user3];    //array of  objects 
+app.use(express.json()); 
+
+app.get("/",function(req,res){               //get imformation about kedneys...
+     const jhonKedneys=  users[0].kedneys   
+     const TotalKedneys=jhonKedneys.length
+     let unhealthyKedneys=0
+     for(let i=0;i<jhonKedneys.length;i++){
+         if(!jhonKedneys[i].healthy){
+            unhealthyKedneys+=1;
+        } 
+     }  
+     let healthyKedneys=TotalKedneys-unhealthyKedneys
+     res.json({
+       // jhonKedneys,
+        unhealthyKedneys,
+        healthyKedneys, 
+        TotalKedneys
+
+     });  
+});   
+
+app.post("/",function(req,res){    //add new kedney..
+  //  console.log(req.body) 
+     const ishealthy=req.body.ishealthy 
+     users[0].kedneys.push({
+           healthy:ishealthy
+     }) ; 
+     res.json({
+          msg:"done!"
+     })
+}); 
+
+app.put("/",function(req,res){      //update somethings...
+   //if there is any unhealthy kidney is there convert this into jealthy 
+   if(!isPresent()) {
+     ///  let isharshit=[]
+       for(let i=0;i<users[0].kedneys.length;i++){
+           if(!users[0].kedneys[i].healthy) {
+              users[0].kedneys[i].healthy=true;  //convert them into Healthy kidney...
+           }  
+       } 
+      // users[0].kedneys=isharshit; 
+      res.json({msg:"done"})
+   }    
+   else{
+      res.json({
+          msg:"unHealthy kidney is not there" 
+      });
+   }
+
+});   
+
+app.delete("/",function(req,res){  //to delete the kidney
+       let isharshit=[]
+      if(!isPresent()){
+          for(let i=0;i<users[0].kedneys.length;i++){
+            if(users[0].kedneys[i].healthy){
+                isharshit.push({
+                    healthy:true
+                });
+            } 
+          } 
+          users[0].kedneys=isharshit;
+          res.json({msg:"done "});
+      } 
+      else{
+         res.json({
+             msg:" unhealthy kedney not thetre to delete:"
+         });
+      }
+}); 
+
+
+ 
+app.listen(3000);   
